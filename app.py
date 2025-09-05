@@ -53,4 +53,4 @@ def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float
         print("Request failed:", response.status_code, response.text)
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=8080, log_level="debug")
+    mcp.run(transport="streamable-http")
