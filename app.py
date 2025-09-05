@@ -1,7 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 import requests
 
-mcp = FastMCP("optimal_schedule", stateless_http=True)
+mcp = FastMCP("optimal_schedule", host="0.0.0.0", port=8080, stateless_http=True)
 
 @mcp.tool()
 def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float, start_lon:float, start_time: str) -> dict:
