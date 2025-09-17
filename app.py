@@ -58,7 +58,7 @@ def direct_loads(date: str, start_lat: float, start_lon: float, end_lat: float, 
     Gets direct loads of trucks from given start and end locations, and starting date.
     
     Args:
-        start_time : Starting date
+        date : Starting date
         start_lat : Start location's latitude
         start_lon : Start location's longitude
         end_lat : Ending location's latitude
@@ -80,10 +80,11 @@ def direct_loads(date: str, start_lat: float, start_lon: float, end_lat: float, 
 
     payload = {
         "date": date,
-        "end_lat": end_lat,
-        "end_lon": end_lon,
         "start_lat": start_lat,
-        "start_lon": start_lon
+        "start_lon": start_lon,
+        "end_lat": end_lat,
+        "end_lon": end_lon
+
     }
 
     response = requests.post(url, headers=headers, json=payload)
