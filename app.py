@@ -80,11 +80,10 @@ def direct_loads(date: str, start_lat: float, start_lon: float, end_lat: float, 
 
     payload = {
         "date": date,
-        "start_lat": start_lat,
-        "start_lon": start_lon,
         "end_lat": end_lat,
-        "end_lon": end_lon
-
+        "end_lon": end_lon,
+        "start_lat": start_lat,
+        "start_lon": start_lon
     }
 
     response = requests.post(url, headers=headers, json=payload)
