@@ -65,7 +65,7 @@ def direct_loads(date: str, start_lat: float, start_lon: float, end_lat: float, 
         end_lon : Ending location's longitude
             
     Returns:
-        List top 5 available direct loads in a list, each load is provided as its unique identifier, revenue, pickup-address, pickup time window, and delivery time window.
+        List top 5 available direct loads in a list, each load is provided as its unique identifier, revenue, pickup-address, delivery-address, pickup time window, and delivery time window.
     """
 
     url = "https://cloud-tunnel.endpoints.wgs-ptv-tools.cloud.goog"
@@ -96,6 +96,7 @@ def direct_loads(date: str, start_lat: float, start_lon: float, end_lat: float, 
                 "position_number": order["postion_number"],
                 "pickup_address": order["pickup_adr"],
                 "pickup_window": f'FROM {order["pickup_rta_from"]} TO {order["pickup_rta_to"]}',
+                "delivery_address": order["delivery_adr"],
                 "delivery_window": f'FROM {order["delivery_rta_from"]} TO {order["delivery_rta_to"]}',
                 "revenue": order["revenue"]
             }
