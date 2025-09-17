@@ -52,5 +52,57 @@ def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float
     else:
         print("Request failed:", response.status_code, response.text)
 
+@mcp.tool()
+def direct_loads(date: str, start_lat: float, start_lon: float, end_lat: float, end_lon: float) -> list:
+    """
+    Gets direct loads of trucks from given start and end locations, and starting date.
+    
+    Args:
+        start_time : Starting date
+        start_lat : Start location's latitude
+        start_lon : Start location's longitude
+        end_lat : Ending location's latitude
+        end_lon : Ending location's longitude
+            
+    Returns:
+        List top 5 available direct loads in a list, each load is provided as its unique identifier, revenue, pickup-address, pickup time window, and delivery time window.
+    """
+
+    url = "https://cloud-tunnel.endpoints.wgs-ptv-tools.cloud.goog"
+
+    headers = {
+        "X-FWD": "http://evalinno-agentic-ltchat-cmp-preview.dev.lkw-walter.com/evalinno-agentic-ltchat-cmp-preview/api/direct_search",
+        "X-AUTH": "wT6vNTkzKXH8E7jOfA5ay4cHGwoJPhOc2XS7UyhVWnQ",
+        "Authorization": "Basic YWdlbnRpY19sdGNoYXRfZHM6dkFDMEExdnBLUDlxQldQc0tDWWRCYjQ3",
+        "accept": "application/json",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "date": date,
+        "end_lat": end_lat,
+        "end_lon": end_lon,
+        "start_lat": start_lat,
+        "start_lon": start_lon
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.ok:
+        all_loads =  response.json()
+        orders_summary = []
+        for order in all_loads["orders"]:
+            summary = {
+                "position_number": order["postion_number"],
+                "pickup_address": order["pickup_adr"],
+                "pickup_window": f'FROM {order["pickup_rta_from"]} TO {order["pickup_rta_to"]}',
+                "delivery_window": f'FROM {order["delivery_rta_from"]} TO {order["delivery_rta_to"]}',
+                "revenue": order["revenue"]
+            }
+            orders_summary.append(summary)
+        return orders_summary
+    else:
+        print("Request failed:", response.status_code, response.text)
+
 if __name__ == "__main__":
     mcp.run(transport="streamable-http")
