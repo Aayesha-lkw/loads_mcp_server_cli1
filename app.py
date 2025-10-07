@@ -55,6 +55,7 @@ def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float
                 "position_number": order["postion_number"],
                 "pickup_address": order["pickup_adr"],
                 "pickup_window": f'FROM {order["pickup_rta_from"]} TO {order["pickup_rta_to"]}',
+                "delivery_address": order["delivery_adr"],
                 "delivery_window": f'FROM {order["delivery_rta_from"]} TO {order["delivery_rta_to"]}',
                 "revenue": order["revenue"]
             }
