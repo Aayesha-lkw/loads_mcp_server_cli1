@@ -17,9 +17,8 @@ def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float
         start_lon : Start location's longitude
         start_time : Start location's datee and time
     Returns:
-        List of all loads that exist in the optimal schedule in a dictionary, each load is provided as its unique identifier, revenue, and arrival date and time.
+        List of all loads that exist in the optimal schedule in a dictionary, each load is provided as its unique identifier, revenue, and arrival date and time, along with total revenue for the entire schedule.
     """
-
 
     #xfwd = os.getenv("X-FWD")
     #xauth = os.getenv("X-AUTH")
@@ -48,7 +47,21 @@ def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float
 
     if response.ok:
         #print(response.json())
-        return response.json()
+        all_loads =  response.json()
+        orders_summary = []
+        total_revenue = all_loads["total_revenue"]
+        for order in all_loads["schedule"]:
+            summary = {
+                "position_number": order["postion_number"],
+                "pickup_address": order["pickup_adr"],
+                "pickup_window": f'FROM {order["pickup_rta_from"]} TO {order["pickup_rta_to"]}',
+                "delivery_window": f'FROM {order["delivery_rta_from"]} TO {order["delivery_rta_to"]}',
+                "revenue": order["revenue"]
+            }
+            orders_summary.append(summary)
+        orders_summary.append({"total_revenue": total_revenue})
+        return orders_summary
+        #return response.json()
     else:
         print("Request failed:", response.status_code, response.text)
 
