@@ -4,7 +4,7 @@ import requests
 mcp = FastMCP("optimal_loads", host="0.0.0.0", port=8080, stateless_http=True)
 
 @mcp.tool()
-def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float, start_lon:float, start_time: str) -> dict:
+def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float, start_lon:float, start_time: str) -> list:
 
     """
     Gets Optimal Schedule of truck loads from given start and end locations, dates, and times.
