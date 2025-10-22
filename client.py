@@ -19,8 +19,12 @@ async def main():
             tools = await session.list_tools()
             tool_name = [tool.name for tool in tools.tools][0]
             #print(f"Available tools: {[tool.name for tool in tools.tools]}")
-            result = await session.call_tool(tool_name, {"end_lat": 45, "end_lon": 10, "end_time": "2025-10-10T00:00:00Z", "start_lat": 51.87, "start_lon": 12.58, "start_time": "2025-10-07T00:00:00Z"})
-            print(result.content[0].text)
+            result = await session.call_tool(tool_name, {"end_lat": 45, "end_lon": 10, "end_time": "2025-10-13T00:00:00Z", "start_lat": 51.87, "start_lon": 12.58, "start_time": "2025-10-05T00:00:00Z"})
+            #print(result.content[1].text)
+            full_result = []
+            for i in range (len(result.content)):
+                full_result.append(result.content[i].text)
+            print(full_result)
 
 if __name__ == "__main__":
     asyncio.run(main())
