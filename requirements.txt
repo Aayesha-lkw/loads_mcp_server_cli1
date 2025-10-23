@@ -1,5 +1,3 @@
 mcp
 google-adk
 pandas
-requests
-google-genai
