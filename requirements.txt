@@ -1,5 +1,5 @@
 mcp
-requests
-pandas
 google-adk
+pandas
+requests
 google-genai

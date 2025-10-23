@@ -1,22 +1,26 @@
 from google.adk.agents import LlmAgent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
+from mcp.server.fastmcp import FastMCP
+import pandas as pd
+#import asyncio
 from google.genai import types
 from mcp.server.fastmcp import FastMCP
-import requests
-import pandas as pd
+
 from dotenv import load_dotenv
 load_dotenv()
-
-mcp = FastMCP("loads_fetching", host="0.0.0.0", port=8080, stateless_http=True)
+mcp = FastMCP("walter_business", host="0.0.0.0", port=8080, stateless_http=True)
 GEMINI_MODEL = "gemini-2.5-flash"
+
 APP_NAME = "app_name1"
 USER_ID = "user_id1"
 SESSION_ID = "session_id1"
+
 session_service = InMemorySessionService()
 
 df = pd.read_csv("output.csv")
 context = df.iloc[0].to_dict()
+#print(context)
 
 input_other_agent_prompt = f"""
     You are an Agent that can only answer of user questions related to business and loads in LKW Walter. 
@@ -25,6 +29,7 @@ input_other_agent_prompt = f"""
     If question is clear but does not make sense then ask user to explain their question.
     If question is irrelevant then ask for relevant questions.
     """
+    
 input_other_agent = LlmAgent(
     name="InputOtherAgent",
     model=GEMINI_MODEL,
@@ -32,8 +37,11 @@ input_other_agent = LlmAgent(
     description="Agent answeres user question according to the input regarding LKW business and loads",
     output_key="query_other"
 )
+
 root_agent = input_other_agent
+
 runner = Runner(app_name=APP_NAME, agent=root_agent, session_service=session_service)
+
 
 @mcp.tool()
 async def get_about_walter(user_text:str) -> str:
@@ -54,9 +62,8 @@ async def get_about_walter(user_text:str) -> str:
     combined_response = '\n\n'.join(full_response_text) if full_response_text else "[No response from agent]"
     return combined_response
 
-
-
-
-
 if __name__ == "__main__":
     mcp.run(transport="streamable-http")
+    #result = asyncio.run(get_about_walter("what is Walter?"))
+    #print(result)
+
