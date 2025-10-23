@@ -9,37 +9,7 @@ load_dotenv()
 
 mcp = FastMCP("loads_fetching", host="0.0.0.0", port=8080, stateless_http=True)
 GEMINI_MODEL = "gemini-2.5-flash"
-APP_NAME = "app_name1"
-USER_ID = "user_id1"
-SESSION_ID = "session_id1"
-session_service = InMemorySessionService()
 
-input_location_agent = LlmAgent(
-    name="InputLocationAgent",
-    model=GEMINI_MODEL,
-    instruction="""<task>You are an agent that provides latitude and logitude of any given location"<task>.
-    <requirement>The values of latitude and longitude should be delivered as float numbers with 4 decimal places.<requirement>
-    """,
-    description="Agent delivers latitude and logitude values of a given location",
-    output_key="query_location"
-)
-runner_loc = Runner(app_name=APP_NAME, agent=input_location_agent, session_service=session_service)
-
-input_other_agent_prompt = f"""
-    You are an Agent that can only answer of user questions related to business and loads in LKW Walter. 
-    If question is about getting information about loads schedule or reasoning information of direct or optimal schedule or loads or revenue about loads then output will be "Fetch".
-    If questions were asked about LKW Walter then you provide answer using the context provided in the content {context}
-    If question is clear but does not make sense then ask user to explain their question.
-    If question is irrelevant then ask for relevant questions.
-    """
-input_other_agent = LlmAgent(
-    name="InputOtherAgent",
-    model=GEMINI_MODEL,
-    instruction= input_other_agent_prompt,
-    description="Agent answeres user question according to the input regarding LKW business and loads",
-    output_key="query_other"
-)
-runner_walter = Runner(app_name=APP_NAME, agent=input_other_agent, session_service=session_service)
 
 @mcp.tool()
 def optimal_loads(end_lat: float, end_lon:float, end_time: str, start_lat: float, start_lon:float, start_time: str) -> list:
@@ -153,43 +123,7 @@ def direct_loads(date: str, start_lat: float, start_lon: float, end_lat: float, 
     else:
         print("Request failed:", response.status_code, response.text)
 
-@mcp.tool()
-async def get_loc_values(user_text:str) -> str:
-    """
-    This function takes user input and provides respective output
-    Input: Takes user question 
-    Output: Outputs Answer 
-    """
-    await session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
-    content = types.Content(role='user', parts=[types.Part(text=user_text)])
-    full_response_text = []
-    async for event in runner_loc.run_async(user_id=USER_ID, session_id=SESSION_ID, new_message=content):
-        if event.is_final_response() and event.content and event.content.parts:
-            response = ''.join([part.text for part in event.content.parts if part.text])
-            if response:
-                full_response_text.append(response)
 
-    combined_response = '\n\n'.join(full_response_text) if full_response_text else "[No response from agent]"
-    return combined_response
-
-@mcp.tool()
-async def get_about_walter(user_text:str) -> str:
-    """
-    This function takes user input and provides respective output
-    Input: Takes user question 
-    Output: Outputs Answer 
-    """
-    await session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
-    content = types.Content(role='user', parts=[types.Part(text=user_text)])
-    full_response_text = []
-    async for event in runner_walter.run_async(user_id=USER_ID, session_id=SESSION_ID, new_message=content):
-        if event.is_final_response() and event.content and event.content.parts:
-            response = ''.join([part.text for part in event.content.parts if part.text])
-            if response:
-                full_response_text.append(response)
-
-    combined_response = '\n\n'.join(full_response_text) if full_response_text else "[No response from agent]"
-    return combined_response
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http")
