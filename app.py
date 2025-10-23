@@ -32,7 +32,8 @@ input_other_agent = LlmAgent(
     description="Agent answeres user question according to the input regarding LKW business and loads",
     output_key="query_other"
 )
-runner_walter = Runner(app_name=APP_NAME, agent=input_other_agent, session_service=session_service)
+root_agent = input_other_agent
+runner_walter = Runner(app_name=APP_NAME, agent=root_agent, session_service=session_service)
 
 @mcp.tool()
 async def get_about_walter(user_text:str) -> str:
